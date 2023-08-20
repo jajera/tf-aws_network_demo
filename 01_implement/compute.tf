@@ -33,40 +33,27 @@ resource "aws_instance" "aws_admin_jump1" {
   }
 }
 
-# resource "aws_instance" "aws_admin_jump2" {
-#   ami           = data.aws_ami.redhat8.id
-#   instance_type = "t2.micro"
-#   key_name      = aws_key_pair.aws_network_demo.key_name
-#   subnet_id     = aws_subnet.sn-aws_admin_subnet.id
-#   vpc_security_group_ids = [
-#     aws_security_group.sgrp-aws_jumphost.id
-#   ]
-#   associate_public_ip_address = false
+resource "aws_instance" "aws_admin_jump2" {
+  ami           = data.aws_ami.redhat8.id
+  instance_type = "t2.micro"
+  key_name      = aws_key_pair.aws_network_demo.key_name
+  subnet_id     = aws_subnet.sn-aws_admin_subnet.id
+  vpc_security_group_ids = [
+    aws_security_group.sgrp-aws_jumphost.id
+  ]
+  associate_public_ip_address = false
 
-#   connection {
-#     type        = "ssh"
-#     user        = "ec2-user"
-#     private_key = "${local.private_key}"
-#     host        = self.public_ip
-#   }
+  user_data = <<-EOF
+    #!/bin/bash
+    echo "${aws_key_pair.aws_network_demo.public_key}" > /home/ec2-user/.ssh/id_ed25519_aws_demo.pub
+    echo "${local.private_key}" > /home/ec2-user/.ssh/id_ed25519_aws_demo
+    EOF
 
-#   provisioner "remote-exec" {
-#     inline = [
-#       "echo \"${aws_key_pair.aws_network_demo.public_key}\" > ~/.ssh/id_ed25519_aws_demo.pub",
-#       "echo \"${local.private_key}\" > ~/.ssh/id_ed25519_aws_demo",
-#       "eval \"$(ssh-agent -s)\"",
-#       "chown ec2-user:ec2-user -R ~/.ssh",
-#       "chmod go-rwx ~/.ssh/id_ed25519_aws_demo",
-#       "chmod go-rwx ~/.ssh/id_ed25519_aws_demo.pub",
-#       "ssh-add ~/.ssh/id_ed25519_aws_demo"
-#     ]
-#   }
-
-#   tags = {
-#     Name  = "ec2-aws_admin_jump2"
-#     Owner = "John Ajera"
-#   }
-# }
+  tags = {
+    Name  = "ec2-aws_admin_jump2"
+    Owner = "John Ajera"
+  }
+}
 
 resource "aws_instance" "aws_private_node1" {
   ami           = data.aws_ami.alpine.id
@@ -79,7 +66,7 @@ resource "aws_instance" "aws_private_node1" {
   associate_public_ip_address = true
 
   tags = {
-    Name  = "aws_private_node1"
+    Name  = "ec2-aws_private_node1"
     Owner = "John Ajera"
   }
 }
@@ -95,7 +82,7 @@ resource "aws_instance" "aws_private_node2" {
   associate_public_ip_address = false
 
   tags = {
-    Name  = "aws_private_node2"
+    Name  = "ec2-aws_private_node2"
     Owner = "John Ajera"
   }
 }
@@ -109,7 +96,7 @@ resource "aws_instance" "aws_private_node2" {
 #   associate_public_ip_address = true
 
 #   tags = {
-#     Name  = "aws_private_node3"
+#     Name  = "ec2-aws_private_node3"
 #     Owner = "John Ajera"
 #   }
 # }
@@ -125,7 +112,7 @@ resource "aws_instance" "aws_public_node1" {
   associate_public_ip_address = true
 
   tags = {
-    Name  = "aws_public_node1"
+    Name  = "ec2-aws_public_node1"
     Owner = "John Ajera"
   }
 }
@@ -141,7 +128,7 @@ resource "aws_instance" "aws_public_node2" {
   associate_public_ip_address = false
 
   tags = {
-    Name  = "aws_public_node2"
+    Name  = "ec2-aws_public_node2"
     Owner = "John Ajera"
   }
 }
@@ -155,7 +142,7 @@ resource "aws_instance" "aws_public_node2" {
 #   associate_public_ip_address = true
 
 #   tags = {
-#     Name  = "aws_public_node3"
+#     Name  = "ec2-aws_public_node3"
 #     Owner = "John Ajera"
 #   }
 # }

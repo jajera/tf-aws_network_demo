@@ -32,3 +32,30 @@ data "aws_ami" "alpine" {
     values = ["alpine-3.15.10-x86_64-bios-cloudinit-r0"]
   }
 }
+
+data "aws_ami" "fedora-coreos" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["fedora-coreos-38.20230514.3.0-x86_64"]
+  }
+}
+
+data "aws_ami" "redhat8" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["RHEL-8.8.0_HVM-20230623-x86_64-3-Hourly2-GP2"]
+  }
+}
+
+resource "aws_key_pair" "aws_network_demo" {
+  key_name   = "kp-aws_network_demo"
+  public_key = file("~/.ssh/id_ed25519_aws_demo.pub")
+}
+
+locals {
+  private_key = file("~/.ssh/id_ed25519_aws_demo")
+}
